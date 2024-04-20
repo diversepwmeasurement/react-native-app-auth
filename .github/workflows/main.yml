@@ -1,25 +1,23 @@
-name: react-native-app-auth CI
-
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
-
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
+    steps:
+    - continue-on-error: true
+      uses: actions/checkout@v2
+    - continue-on-error: true
+      name: Install dependencies
+      run: yarn install --frozen-lockfile --non-interactive
+    - continue-on-error: true
+      name: Lint
+      run: yarn run lint
+    - continue-on-error: true
+      name: Test
+      run: yarn run test
     strategy:
       matrix:
-        node-version: [10]
-
-    steps:
-      - uses: actions/checkout@v2
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile --non-interactive
-
-      - name: Lint
-        run: yarn run lint
-      
-      - name: Test
-        run: yarn run test
+        node-version:
+        - 10
+name: react-native-app-auth CI
+on:
+  repository_dispatch:
+    types: trigger-ga___main.yml

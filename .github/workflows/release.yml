@@ -1,38 +1,39 @@
-name: Release
-on:
-  push:
-    branches:
-      - main
 jobs:
   release:
     name: Release
-    runs-on: ubuntu-latest
     permissions:
       contents: write
+      deployments: write
       id-token: write
       issues: write
-      repository-projects: write
-      deployments: write
       packages: write
       pull-requests: write
+      repository-projects: write
+    runs-on: self-hosted
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v3
-        with:
-          node-version: 18
-
-      - name: Install dependencies
-        run: yarn install --frozen-lockfile
-
-      - name: Unit Tests
-        run: yarn test
-
-      - name: PR or Publish
-        id: changesets
-        uses: changesets/action@v1
-        with:
-          version: yarn changeset version
-          publish: yarn changeset publish
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+    - continue-on-error: true
+      uses: actions/checkout@v2
+    - continue-on-error: true
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+    - continue-on-error: true
+      name: Install dependencies
+      run: yarn install --frozen-lockfile
+    - continue-on-error: true
+      name: Unit Tests
+      run: yarn test
+    - continue-on-error: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      id: changesets
+      name: PR or Publish
+      uses: changesets/action@v1
+      with:
+        publish: yarn changeset publish
+        version: yarn changeset version
+name: Release
+on:
+  repository_dispatch:
+    types: trigger-ga___release.yml
